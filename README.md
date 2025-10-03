@@ -11,6 +11,7 @@
 ```
 These options disable support for OpenCV image codecs and the cv2 python package, which cause build errors and
 are not needed for Starburst use cases.
+
 5. Run `jar tf java/build/libs/onnxruntime-extensions-0.13.0.jar` and check that the jar contains dylibs for osx/aarch64
 6. `cd onnxruntime-extensions/test` and `python test_bert_tokenizer.py`, `python test_robertatok.py`
 to install the jar locally.
