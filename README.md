@@ -1,5 +1,41 @@
 # ONNXRuntime-Extensions
 
+# Starburst Build Instructions
+
+1. `pip install cmake==3.31` if not already installed. Later versions may hit compatibility issues.
+2. `rm -rf ./out ./.scb`
+3. Point `JAVA_HOME` to a version 17 JDK
+4. Run
+```shell
+   bash ./build.sh -DOCOS_BUILD_JAVA=ON -DOCOS_ENABLE_OPENCV_CODECS=OFF -DOCOS_ENABLE_CV2=OFF DOCOS_ENABLE_VISION=OFF
+```
+These options disable support for OpenCV image codecs and the cv2 python package, which cause build errors and
+are not needed for Starburst use cases.
+5. Run `jar tf java/build/libs/onnxruntime-extensions-0.13.0.jar` and check that the jar contains dylibs for osx/aarch64
+6. `cd onnxruntime-extensions/test` and `python test_bert_tokenizer.py`, `python test_robertatok.py`
+to install the jar locally.
+7. Test the jar against the `starburst-onnx` project
+8. Run 
+```shell
+   ./combine-jars.sh --input-jar java/build/libs/onnxruntime-extensions-0.13.0.jar \
+   --input-jar https://repo1.maven.org/maven2/com/microsoft/onnxruntime/onnxruntime-extensions/0.13.0/onnxruntime-extensions-0.13.0.jar \
+   --output-jar ./onnxruntime-extensions-all-arch-0.13.0.jar
+```
+9. Verify that the combined jar contains all the dylibs for all OS/architectures.
+10. Use the combined jar in the `starburst-onnx` project.
+11. Run
+```shell
+   mvn install:install-file \
+   -Dfile=./onnxruntime-extensions-all-arch-0.13.0.jar \
+   -DgroupId=com.microsoft.onnxruntime \
+   -DartifactId=onnxruntime-extensions \
+   -Dversion=0.13.0 \
+   -Dpackaging=jar
+``` 
+
+# WARNING: INCOMPLETE!!
+### The maven jar only includes linux/x64 .so files, linux/aarch64 are missing. We will need to fix this before release.
+
 [![Build Status](https://dev.azure.com/onnxruntime/onnxruntime/_apis/build/status%2Fonnxruntime-extensions.CI?branchName=main)](https://dev.azure.com/onnxruntime/onnxruntime/_build/latest?definitionId=213&branchName=main)
 
 ## What's ONNXRuntime-Extensions
